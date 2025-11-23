@@ -192,6 +192,10 @@ function App() {
         setIsDrawing(false);
     };
 
+    const handleTouchEnd = () => {
+        handleMouseUp();
+    };
+
     const applyTool = (index) => {
         if (activeTool === 'pen') {
             updatePixel(index, activeColor);
@@ -324,7 +328,7 @@ function App() {
     };
 
     return (
-        <div className="app-layout" onMouseUp={handleMouseUp}>
+        <div className="app-layout" onMouseUp={handleMouseUp} onTouchEnd={handleTouchEnd}>
             <aside className={`sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
                 <div className="sidebar-header">
                     <div className="logo-container">

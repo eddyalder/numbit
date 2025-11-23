@@ -14,6 +14,34 @@ const Grid = ({ width, height, pixels, previewPixels, backgroundColor, onPixelCl
         backgroundColor: backgroundColor || 'transparent',
     };
 
+    // Helper function to get pixel index from touch event
+    const getPixelIndexFromTouch = (touch) => {
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (element && element.classList.contains('pixel')) {
+            const pixelElements = Array.from(gridRef.current.querySelectorAll('.pixel'));
+            return pixelElements.indexOf(element);
+        }
+        return -1;
+    };
+
+    // Handle touch start
+    const handleTouchStart = (e, index) => {
+        e.preventDefault();
+        onPixelClick(index);
+    };
+
+    // Handle touch move
+    const handleTouchMove = (e) => {
+        e.preventDefault();
+        if (e.touches.length > 0) {
+            const touch = e.touches[0];
+            const index = getPixelIndexFromTouch(touch);
+            if (index !== -1) {
+                onPixelEnter(index);
+            }
+        }
+    };
+
     return (
         <div className="grid-container">
             <div
@@ -43,6 +71,8 @@ const Grid = ({ width, height, pixels, previewPixels, backgroundColor, onPixelCl
                                 e.preventDefault();
                                 onPixelDoubleClick(index);
                             }}
+                            onTouchStart={(e) => handleTouchStart(e, index)}
+                            onTouchMove={handleTouchMove}
                         />
                     );
                 })}
