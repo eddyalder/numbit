@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pen, Eraser, PaintBucket, Undo, Redo, Square, Circle, Minus, Plus } from 'lucide-react';
+import { Pen, Eraser, PaintBucket, Undo, Redo, Square, Circle, Minus, Plus, Trash2 } from 'lucide-react';
 import './Toolbar.css';
 
 const TOOLS = [
@@ -17,7 +17,7 @@ const PRESET_COLORS = [
     '#f43f5e', '#78350f', '#71717a'
 ];
 
-const Toolbar = ({ activeTool, setActiveTool, activeColor, setActiveColor, customColors, setCustomColors, undo, redo, canUndo, canRedo }) => {
+const Toolbar = ({ activeTool, setActiveTool, activeColor, setActiveColor, customColors, setCustomColors, undo, redo, canUndo, canRedo, clearCustomColors }) => {
 
     const addCustomColor = () => {
         if (!customColors.includes(activeColor)) {
@@ -69,7 +69,12 @@ const Toolbar = ({ activeTool, setActiveTool, activeColor, setActiveColor, custo
 
             {customColors.length > 0 && (
                 <>
-                    <div className="section-title" style={{ marginTop: '0.5rem' }}>Custom</div>
+                    <div className="custom-header">
+                        <div className="section-title" style={{ marginBottom: 0 }}>Custom</div>
+                        <button className="clear-palette-btn" onClick={clearCustomColors} title="Clear Palette">
+                            <Trash2 size={12} />
+                        </button>
+                    </div>
                     <div className="colors-grid">
                         {customColors.map(color => (
                             <button

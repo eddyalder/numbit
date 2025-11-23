@@ -22,6 +22,7 @@ function App() {
     const [historyIndex, setHistoryIndex] = useState(-1);
     const [showGridLines, setShowGridLines] = useState(true);
     const [isClearModalOpen, setIsClearModalOpen] = useState(false);
+    const [isClearPaletteModalOpen, setIsClearPaletteModalOpen] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768);
 
@@ -212,6 +213,15 @@ function App() {
         setIsClearModalOpen(false);
     };
 
+    const requestClearPalette = () => {
+        setIsClearPaletteModalOpen(true);
+    };
+
+    const confirmClearPalette = () => {
+        setCustomColors([]);
+        setIsClearPaletteModalOpen(false);
+    };
+
     const handleResize = (newSize) => {
         if (newSize < 4 || newSize > 64) return;
         const newPixels = Array(newSize * newSize).fill(null);
@@ -231,7 +241,10 @@ function App() {
         <div className="app-layout" onMouseUp={handleMouseUp}>
             <aside className={`sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
                 <div className="sidebar-header">
-                    <div className="logo">Numbit</div>
+                    <div className="logo-container">
+                        <img src="/favicon.svg" alt="Numbit Logo" className="logo-icon" />
+                        <div className="logo">Numbit</div>
+                    </div>
                     <button
                         className="sidebar-close-btn"
                         onClick={() => setIsSidebarOpen(false)}
@@ -251,6 +264,7 @@ function App() {
                     redo={redo}
                     canUndo={historyIndex > 0}
                     canRedo={historyIndex < history.length - 1}
+                    clearCustomColors={requestClearPalette}
                 />
                 <Controls
                     size={size}
@@ -295,10 +309,20 @@ function App() {
                     confirmText="Clear"
                     isDanger={true}
                 >
-                    Are you sure you want to clear the entire board? This action cannot be undone via history if you navigate away.
+                    Are you sure you want to clear the entire board? This action cannot be undone.
+                </Modal>
+                <Modal
+                    isOpen={isClearPaletteModalOpen}
+                    title="Clear Palette"
+                    onConfirm={confirmClearPalette}
+                    onCancel={() => setIsClearPaletteModalOpen(false)}
+                    confirmText="Clear Palette"
+                    isDanger={true}
+                >
+                    Are you sure you want to remove all custom colors? This action cannot be undone.
                 </Modal>
             </main>
-        </div>
+        </div >
     );
 }
 
