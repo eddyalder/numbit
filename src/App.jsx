@@ -4,6 +4,7 @@ import Grid from './components/Grid';
 import Toolbar from './components/Toolbar';
 import Controls from './components/Controls';
 import Modal from './components/Modal';
+import CreditWidget from './components/CreditWidget';
 import { getToolPixels } from './utils/tools';
 import './App.css';
 
@@ -321,6 +322,7 @@ function App() {
                 >
                     Are you sure you want to remove all custom colors? This action cannot be undone.
                 </Modal>
+                <CreditWidget />
             </main>
         </div >
     );

@@ -1,0 +1,84 @@
+.credit-widget {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    background-color: rgba(15, 23, 42, 0.8);
+    /* Dark background with opacity */
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    /* More pill-shaped */
+    text-decoration: none;
+    color: var(--text-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+}
+
+.credit-widget:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    border-color: var(--accent);
+    background-color: rgba(15, 23, 42, 0.95);
+}
+
+.credit-content {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    line-height: 1.2;
+}
+
+.credit-text {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.credit-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.credit-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    /* Optional: add a subtle glow to the icon too */
+    filter: drop-shadow(0 0 2px rgba(139, 92, 246, 0.2));
+    transition: transform 0.3s ease;
+}
+
+.credit-widget:hover .credit-icon {
+    transform: rotate(10deg) scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .credit-widget {
+        bottom: 1rem;
+        right: 1rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .credit-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .credit-name {
+        font-size: 0.8rem;
+    }
+
+    .credit-text {
+        font-size: 0.6rem;
+    }
+}
