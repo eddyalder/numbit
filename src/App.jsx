@@ -27,6 +27,8 @@ function App() {
     const [backgroundColor, setBackgroundColor] = useState(null); // Default transparent
     const [customColors, setCustomColors] = useState([]);
     const [activeTool, setActiveTool] = useState('pen');
+    const [brushSize, setBrushSize] = useState(1);
+    const [shapeFillMode, setShapeFillMode] = useState('filled');
     const [isDrawing, setIsDrawing] = useState(false);
     const [history, setHistory] = useState([]);
     const [historyIndex, setHistoryIndex] = useState(-1);
@@ -155,7 +157,7 @@ function App() {
             if (dragStart !== null) {
                 const start = getCoordinates(dragStart);
                 const end = getCoordinates(index);
-                const pixelsList = getToolPixels(activeTool, start, end);
+                const pixelsList = getToolPixels(activeTool, start, end, shapeFillMode);
 
                 const shape = {};
                 pixelsList.forEach(p => {
@@ -197,27 +199,47 @@ function App() {
     };
 
     const applyTool = (index) => {
-        if (activeTool === 'pen') {
-            updatePixel(index, activeColor);
-        } else if (activeTool === 'mirror') {
-            const { x, y } = getCoordinates(index);
-            const mirrorX = size - 1 - x;
-            const mirrorIndex = getIndex(mirrorX, y);
+        const { x, y } = getCoordinates(index);
+        const newPixels = [...pixels];
 
-            const newPixels = [...pixels];
-            newPixels[index] = activeColor;
-            if (mirrorIndex !== -1) newPixels[mirrorIndex] = activeColor;
+        // Helper to apply brush to multiple pixels
+        const applyBrush = (callback) => {
+            const offset = Math.floor(brushSize / 2);
+            for (let dy = 0; dy < brushSize; dy++) {
+                for (let dx = 0; dx < brushSize; dx++) {
+                    const targetX = x - offset + dx;
+                    const targetY = y - offset + dy;
+                    if (targetX >= 0 && targetX < size && targetY >= 0 && targetY < size) {
+                        const targetIdx = getIndex(targetX, targetY);
+                        callback(targetIdx, targetX, targetY);
+                    }
+                }
+            }
+        };
+
+        if (activeTool === 'pen') {
+            applyBrush((idx) => {
+                newPixels[idx] = activeColor;
+            });
+            setPixels(newPixels);
+        } else if (activeTool === 'mirror') {
+            applyBrush((idx, targetX, targetY) => {
+                const mirrorX = size - 1 - targetX;
+                const mirrorIndex = getIndex(mirrorX, targetY);
+                newPixels[idx] = activeColor;
+                if (mirrorIndex !== -1) newPixels[mirrorIndex] = activeColor;
+            });
             setPixels(newPixels);
         } else if (activeTool === 'dither') {
-            const { x, y } = getCoordinates(index);
-            if ((x + y) % 2 === 0) {
-                updatePixel(index, activeColor);
-            }
+            applyBrush((idx, targetX, targetY) => {
+                if ((targetX + targetY) % 2 === 0) {
+                    newPixels[idx] = activeColor;
+                }
+            });
+            setPixels(newPixels);
         } else if (activeTool === 'spray') {
-            const { x, y } = getCoordinates(index);
             const radius = 2;
             const density = 0.3;
-            const newPixels = [...pixels];
 
             for (let dy = -radius; dy <= radius; dy++) {
                 for (let dx = -radius; dx <= radius; dx++) {
@@ -233,14 +255,19 @@ function App() {
             }
             setPixels(newPixels);
         } else if (activeTool === 'shading') {
-            const currentColor = pixels[index];
-            if (currentColor) {
-                // Darken by 20%
-                const newColor = adjustBrightness(currentColor, -20);
-                updatePixel(index, newColor);
-            }
+            applyBrush((idx) => {
+                const currentColor = pixels[idx];
+                if (currentColor) {
+                    const newColor = adjustBrightness(currentColor, -20);
+                    newPixels[idx] = newColor;
+                }
+            });
+            setPixels(newPixels);
         } else if (activeTool === 'eraser') {
-            updatePixel(index, null);
+            applyBrush((idx) => {
+                newPixels[idx] = null;
+            });
+            setPixels(newPixels);
         } else if (activeTool === 'bucket') {
             fillArea(index, activeColor);
         }
@@ -350,6 +377,10 @@ function App() {
                     setActiveColor={setActiveColor}
                     customColors={customColors}
                     setCustomColors={setCustomColors}
+                    brushSize={brushSize}
+                    setBrushSize={setBrushSize}
+                    shapeFillMode={shapeFillMode}
+                    setShapeFillMode={setShapeFillMode}
                     undo={undo}
                     redo={redo}
                     canUndo={historyIndex > 0}

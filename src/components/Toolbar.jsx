@@ -23,13 +23,21 @@ const PRESET_COLORS = [
     '#f43f5e', '#78350f', '#71717a'
 ];
 
-const Toolbar = ({ activeTool, setActiveTool, activeColor, setActiveColor, customColors, setCustomColors, undo, redo, canUndo, canRedo, clearCustomColors }) => {
+const BRUSH_SIZES = [1, 2, 3, 4];
+
+const BRUSH_TOOLS = ['pen', 'eraser', 'mirror', 'dither', 'shading'];
+const SHAPE_TOOLS = ['square', 'circle', 'line'];
+
+const Toolbar = ({ activeTool, setActiveTool, activeColor, setActiveColor, customColors, setCustomColors, undo, redo, canUndo, canRedo, clearCustomColors, brushSize, setBrushSize, shapeFillMode, setShapeFillMode }) => {
 
     const addCustomColor = () => {
         if (!customColors.includes(activeColor)) {
             setCustomColors([...customColors, activeColor]);
         }
     };
+
+    const showBrushSize = BRUSH_TOOLS.includes(activeTool);
+    const showShapeOptions = SHAPE_TOOLS.includes(activeTool);
 
     return (
         <div className="toolbar-container">
@@ -47,6 +55,70 @@ const Toolbar = ({ activeTool, setActiveTool, activeColor, setActiveColor, custo
                     </button>
                 ))}
             </div>
+
+            {/* Tool Options - Conditionally show brush size or shape options */}
+            {(showBrushSize || showShapeOptions) && (
+                <div className="tool-options-container">
+                    {showBrushSize && (
+                        <div className="tool-options-content">
+                            <div className="section-title">Brush Size</div>
+                            <div className="brush-size-selector">
+                                {BRUSH_SIZES.map(size => (
+                                    <button
+                                        key={size}
+                                        className={`brush-size-btn ${brushSize === size ? 'active' : ''}`}
+                                        onClick={() => setBrushSize(size)}
+                                        title={`${size}x${size} pixels`}
+                                    >
+                                        <div
+                                            className="brush-size-preview"
+                                            style={{
+                                                width: `${4 + size * 3}px`,
+                                                height: `${4 + size * 3}px`
+                                            }}
+                                        />
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {showShapeOptions && (
+                        <div className="tool-options-content">
+                            <div className="section-title">Fill Mode</div>
+                            <div className="shape-fill-selector">
+                                <button
+                                    className={`fill-mode-btn ${shapeFillMode === 'filled' ? 'active' : ''}`}
+                                    onClick={() => setShapeFillMode('filled')}
+                                    title="Filled"
+                                >
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <rect x="6" y="6" width="12" height="12" fill="currentColor" />
+                                    </svg>
+                                </button>
+                                <button
+                                    className={`fill-mode-btn ${shapeFillMode === 'outline' ? 'active' : ''}`}
+                                    onClick={() => setShapeFillMode('outline')}
+                                    title="Outline"
+                                >
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <rect x="6" y="6" width="12" height="12" stroke="currentColor" strokeWidth="2" fill="none" />
+                                    </svg>
+                                </button>
+                                <button
+                                    className={`fill-mode-btn ${shapeFillMode === 'dashed' ? 'active' : ''}`}
+                                    onClick={() => setShapeFillMode('dashed')}
+                                    title="Dashed"
+                                >
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <rect x="6" y="6" width="12" height="12" stroke="currentColor" strokeWidth="2" strokeDasharray="2,2" fill="none" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
 
             <div className="history-controls">
                 <button className="tool-btn" onClick={undo} disabled={!canUndo} title="Undo">

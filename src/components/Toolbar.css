@@ -157,3 +157,108 @@
     border-color: #f43f5e;
     color: #f43f5e;
 }
+
+/* Brush Size Selector */
+.brush-size-selector {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.brush-size-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.brush-size-btn:hover {
+    background-color: var(--bg-secondary);
+    border-color: var(--text-secondary);
+}
+
+.brush-size-btn.active {
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
+
+.brush-size-preview {
+    background-color: var(--text-secondary);
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.brush-size-btn:hover .brush-size-preview {
+    background-color: var(--text-primary);
+}
+
+.brush-size-btn.active .brush-size-preview {
+    background-color: white;
+}
+
+/* Tool Options Container - Professional Animations */
+.tool-options-container {
+    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tool-options-content {
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Shape Fill Selector */
+.shape-fill-selector {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.fill-mode-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.fill-mode-btn:hover {
+    background-color: var(--bg-secondary);
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+}
+
+.fill-mode-btn.active {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
