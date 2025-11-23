@@ -12,6 +12,7 @@ const Grid = ({ width, height, pixels, previewPixels, backgroundColor, onPixelCl
         aspectRatio: `${width} / ${height}`,
         border: '1px solid var(--border)',
         backgroundColor: backgroundColor || 'transparent',
+        touchAction: 'none', // Prevent scrolling on touch
     };
 
     // Helper function to get pixel index from touch event
