@@ -1,7 +1,7 @@
 .toolbar-container {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .section-title {
@@ -10,7 +10,7 @@
     letter-spacing: 0.05em;
     color: var(--text-secondary);
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .tools-grid,
@@ -54,7 +54,7 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     background-color: var(--bg-primary);
     padding: 0.5rem;
     border-radius: 8px;

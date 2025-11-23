@@ -220,7 +220,7 @@ function App() {
     return (
         <div className="app-layout" onMouseUp={handleMouseUp}>
             <aside className="sidebar">
-                <div className="logo">8-Bit Art</div>
+                <div className="logo">Numbit</div>
                 <Toolbar
                     activeTool={activeTool}
                     setActiveTool={setActiveTool}

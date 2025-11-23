@@ -1,5 +1,5 @@
-import React from 'react';
-import { Download, Trash2, Grid3X3, FileDown, RotateCcw } from 'lucide-react';
+import React, { useState } from 'react';
+import { Download, Trash2, Grid3X3, FileDown, RotateCcw, Check, Ban } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import './Controls.css';
@@ -71,45 +71,38 @@ const Controls = ({ size, setSize, clearBoard, showGridLines, setShowGridLines, 
 
             <div className="control-group">
                 <label>Background</label>
-                <div className="bg-picker">
-                    <div className="bg-option">
-                        <input
-                            type="radio"
-                            id="bg-transparent"
-                            name="bg-color"
-                            checked={!backgroundColor}
-                            onChange={() => setBackgroundColor(null)}
-                        />
-                        <label htmlFor="bg-transparent">Transparent</label>
-                    </div>
-                    <div className="bg-option">
-                        <input
-                            type="radio"
-                            id="bg-color"
-                            name="bg-color"
-                            checked={!!backgroundColor}
-                            onChange={() => !backgroundColor && setBackgroundColor('#000000')}
-                        />
-                        <div className="color-input-wrapper">
+                <div className="bg-picker-container">
+                    <div className="bg-preview-row">
+                        <button
+                            className={`bg-type-btn ${!backgroundColor ? 'active' : ''}`}
+                            onClick={() => setBackgroundColor(null)}
+                            title="Transparent Background"
+                        >
+                            <Ban size={18} />
+                        </button>
+                        <div className="bg-color-input-wrapper" style={{ backgroundColor: backgroundColor || 'transparent' }}>
                             <input
                                 type="color"
                                 value={backgroundColor || '#000000'}
                                 onChange={(e) => setBackgroundColor(e.target.value)}
-                                disabled={!backgroundColor}
+                                onClick={() => !backgroundColor && setBackgroundColor('#000000')}
                             />
                         </div>
+                        <div className="hex-code">{backgroundColor || 'Transparent'}</div>
                     </div>
                 </div>
             </div>
 
-            <div className="control-group checkbox-group">
-                <label htmlFor="grid-lines">Show Grid Lines</label>
-                <input
-                    type="checkbox"
-                    id="grid-lines"
-                    checked={showGridLines}
-                    onChange={(e) => setShowGridLines(e.target.checked)}
-                />
+            <div className="control-group">
+                <div className="label-row">
+                    <label>Grid Lines</label>
+                    <button
+                        className={`toggle-btn ${showGridLines ? 'active' : ''}`}
+                        onClick={() => setShowGridLines(!showGridLines)}
+                    >
+                        <div className="toggle-handle"></div>
+                    </button>
+                </div>
             </div>
 
             <div className="section-title">Actions</div>

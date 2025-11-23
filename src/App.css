@@ -11,8 +11,8 @@
     border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
-    padding: 1.5rem;
-    gap: 2rem;
+    padding: 1rem;
+    gap: 1.25rem;
     overflow-y: auto;
     z-index: 10;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
@@ -24,7 +24,7 @@
     background: linear-gradient(to right, #3b82f6, #8b5cf6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .main-content {
