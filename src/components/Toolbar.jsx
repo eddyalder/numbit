@@ -1,14 +1,20 @@
 import React from 'react';
-import { Pen, Eraser, PaintBucket, Undo, Redo, Square, Circle, Minus, Plus, Trash2 } from 'lucide-react';
+import { Pen, Eraser, PaintBucket, Undo, Redo, Square, Circle, Minus, Plus, Trash2, Pipette, Move, FlipHorizontal, Grid3X3, SprayCan, Moon } from 'lucide-react';
 import './Toolbar.css';
 
 const TOOLS = [
     { id: 'pen', icon: Pen, label: 'Pen' },
     { id: 'eraser', icon: Eraser, label: 'Eraser' },
-    { id: 'bucket', icon: PaintBucket, label: 'Fill' },
     { id: 'line', icon: Minus, label: 'Line' },
     { id: 'square', icon: Square, label: 'Rectangle' },
     { id: 'circle', icon: Circle, label: 'Circle' },
+    { id: 'mirror', icon: FlipHorizontal, label: 'Mirror Pen' },
+    { id: 'dither', icon: Grid3X3, label: 'Dither Pen' },
+    { id: 'spray', icon: SprayCan, label: 'Spray Paint' },
+    { id: 'shading', icon: Moon, label: 'Shading' },
+    { id: 'bucket', icon: PaintBucket, label: 'Fill' },
+    { id: 'pipette', icon: Pipette, label: 'Picker' },
+    { id: 'move', icon: Move, label: 'Move' },
 ];
 
 const PRESET_COLORS = [

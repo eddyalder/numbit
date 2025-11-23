@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Menu, X } from 'lucide-react';
 import Grid from './components/Grid';
 import Toolbar from './components/Toolbar';
@@ -12,10 +12,19 @@ const DEFAULT_SIZE = 16;
 const MAX_HISTORY = 50;
 
 function App() {
+    const adjustBrightness = (hex, percent) => {
+        const num = parseInt(hex.replace('#', ''), 16);
+        const amt = Math.round(2.55 * percent);
+        const R = (num >> 16) + amt;
+        const G = (num >> 8 & 0x00FF) + amt;
+        const B = (num & 0x0000FF) + amt;
+        return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+    };
+
     const [size, setSize] = useState(DEFAULT_SIZE);
     const [pixels, setPixels] = useState(Array(DEFAULT_SIZE * DEFAULT_SIZE).fill(null));
     const [activeColor, setActiveColor] = useState('#ffffff');
-    const [backgroundColor, setBackgroundColor] = useState('#000000'); // Default black for 8-bit feel
+    const [backgroundColor, setBackgroundColor] = useState(null); // Default transparent
     const [customColors, setCustomColors] = useState([]);
     const [activeTool, setActiveTool] = useState('pen');
     const [isDrawing, setIsDrawing] = useState(false);
@@ -30,6 +39,7 @@ function App() {
     // Shape drawing state
     const [dragStart, setDragStart] = useState(null);
     const [previewPixels, setPreviewPixels] = useState(null);
+    const moveStartPixels = useRef(null);
 
     useEffect(() => {
         if (history.length === 0) {
@@ -48,7 +58,9 @@ function App() {
                     setHistory([parsed.pixels]);
                     setHistoryIndex(0);
                 }
-                if (parsed.backgroundColor) setBackgroundColor(parsed.backgroundColor);
+                if (parsed.backgroundColor && parsed.backgroundColor !== '#000000') {
+                    setBackgroundColor(parsed.backgroundColor);
+                }
                 if (parsed.customColors) setCustomColors(parsed.customColors);
             } catch (e) {
                 console.error("Failed to load state", e);
@@ -90,9 +102,18 @@ function App() {
     };
 
     const handlePixelClick = (index) => {
+        if (activeTool === 'pipette') {
+            const color = pixels[index];
+            if (color) setActiveColor(color);
+            return;
+        }
+
         setIsDrawing(true);
 
-        if (['square', 'circle', 'line'].includes(activeTool)) {
+        if (activeTool === 'move') {
+            setDragStart(index);
+            moveStartPixels.current = [...pixels];
+        } else if (['square', 'circle', 'line'].includes(activeTool)) {
             setDragStart(index);
             const initialShape = {};
             initialShape[index] = activeColor;
@@ -110,7 +131,27 @@ function App() {
     const handlePixelEnter = (index) => {
         if (!isDrawing) return;
 
-        if (['square', 'circle', 'line'].includes(activeTool)) {
+        if (activeTool === 'move' && dragStart !== null && moveStartPixels.current) {
+            const start = getCoordinates(dragStart);
+            const current = getCoordinates(index);
+            const dx = current.x - start.x;
+            const dy = current.y - start.y;
+
+            if (dx === 0 && dy === 0) return;
+
+            const newPixels = Array(size * size).fill(null);
+            for (let y = 0; y < size; y++) {
+                for (let x = 0; x < size; x++) {
+                    const oldX = x - dx;
+                    const oldY = y - dy;
+                    if (oldX >= 0 && oldX < size && oldY >= 0 && oldY < size) {
+                        const oldIdx = oldY * size + oldX;
+                        newPixels[y * size + x] = moveStartPixels.current[oldIdx];
+                    }
+                }
+            }
+            setPixels(newPixels);
+        } else if (['square', 'circle', 'line'].includes(activeTool)) {
             if (dragStart !== null) {
                 const start = getCoordinates(dragStart);
                 const end = getCoordinates(index);
@@ -131,7 +172,11 @@ function App() {
     const handleMouseUp = () => {
         if (!isDrawing) return;
 
-        if (['square', 'circle', 'line'].includes(activeTool) && dragStart !== null && previewPixels) {
+        if (activeTool === 'move') {
+            saveToHistory(pixels);
+            setDragStart(null);
+            moveStartPixels.current = null;
+        } else if (['square', 'circle', 'line'].includes(activeTool) && dragStart !== null && previewPixels) {
             const newPixels = [...pixels];
             Object.keys(previewPixels).forEach(key => {
                 newPixels[key] = previewPixels[key];
@@ -150,6 +195,46 @@ function App() {
     const applyTool = (index) => {
         if (activeTool === 'pen') {
             updatePixel(index, activeColor);
+        } else if (activeTool === 'mirror') {
+            const { x, y } = getCoordinates(index);
+            const mirrorX = size - 1 - x;
+            const mirrorIndex = getIndex(mirrorX, y);
+
+            const newPixels = [...pixels];
+            newPixels[index] = activeColor;
+            if (mirrorIndex !== -1) newPixels[mirrorIndex] = activeColor;
+            setPixels(newPixels);
+        } else if (activeTool === 'dither') {
+            const { x, y } = getCoordinates(index);
+            if ((x + y) % 2 === 0) {
+                updatePixel(index, activeColor);
+            }
+        } else if (activeTool === 'spray') {
+            const { x, y } = getCoordinates(index);
+            const radius = 2;
+            const density = 0.3;
+            const newPixels = [...pixels];
+
+            for (let dy = -radius; dy <= radius; dy++) {
+                for (let dx = -radius; dx <= radius; dx++) {
+                    if (Math.random() < density) {
+                        const targetX = x + dx;
+                        const targetY = y + dy;
+                        if (targetX >= 0 && targetX < size && targetY >= 0 && targetY < size) {
+                            const targetIdx = getIndex(targetX, targetY);
+                            newPixels[targetIdx] = activeColor;
+                        }
+                    }
+                }
+            }
+            setPixels(newPixels);
+        } else if (activeTool === 'shading') {
+            const currentColor = pixels[index];
+            if (currentColor) {
+                // Darken by 20%
+                const newColor = adjustBrightness(currentColor, -20);
+                updatePixel(index, newColor);
+            }
         } else if (activeTool === 'eraser') {
             updatePixel(index, null);
         } else if (activeTool === 'bucket') {
