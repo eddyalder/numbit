@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Grid.css';
 
-const Grid = ({ width, height, pixels, previewPixels, backgroundColor, onPixelClick, onPixelEnter, isDrawing, showGridLines = true }) => {
+const Grid = ({ width, height, pixels, previewPixels, backgroundColor, onPixelClick, onPixelEnter, onPixelDoubleClick, isDrawing, showGridLines = true }) => {
     const gridRef = useRef(null);
 
     const style = {
         display: 'grid',
         gridTemplateColumns: `repeat(${width}, 1fr)`,
         gridTemplateRows: `repeat(${height}, 1fr)`,
-        width: '100%',
-        height: '100%',
+        width: `min(100%, calc((100vh - 4rem) * ${width / height}))`,
         aspectRatio: `${width} / ${height}`,
         border: '1px solid var(--border)',
         backgroundColor: backgroundColor || 'transparent',
@@ -39,6 +38,10 @@ const Grid = ({ width, height, pixels, previewPixels, backgroundColor, onPixelCl
                             }}
                             onMouseEnter={(e) => {
                                 onPixelEnter(index);
+                            }}
+                            onDoubleClick={(e) => {
+                                e.preventDefault();
+                                onPixelDoubleClick(index);
                             }}
                         />
                     );

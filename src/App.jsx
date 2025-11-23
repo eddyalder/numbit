@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
 import Grid from './components/Grid';
 import Toolbar from './components/Toolbar';
 import Controls from './components/Controls';
@@ -21,6 +22,8 @@ function App() {
     const [historyIndex, setHistoryIndex] = useState(-1);
     const [showGridLines, setShowGridLines] = useState(true);
     const [isClearModalOpen, setIsClearModalOpen] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768);
 
     // Shape drawing state
     const [dragStart, setDragStart] = useState(null);
@@ -49,12 +52,14 @@ function App() {
                 console.error("Failed to load state", e);
             }
         }
+        setIsLoaded(true);
     }, []);
 
     useEffect(() => {
+        if (!isLoaded) return;
         const state = { pixels, size, backgroundColor, customColors };
         localStorage.setItem('8bit-art-state', JSON.stringify(state));
-    }, [pixels, size, backgroundColor, customColors]);
+    }, [pixels, size, backgroundColor, customColors, isLoaded]);
 
     const saveToHistory = (newPixels) => {
         const newHistory = history.slice(0, historyIndex + 1);
@@ -93,6 +98,11 @@ function App() {
         } else {
             applyTool(index);
         }
+    };
+
+    const handlePixelDoubleClick = (index) => {
+        updatePixel(index, null);
+        saveToHistory(pixels); // Save immediately for double click action
     };
 
     const handlePixelEnter = (index) => {
@@ -219,8 +229,17 @@ function App() {
 
     return (
         <div className="app-layout" onMouseUp={handleMouseUp}>
-            <aside className="sidebar">
-                <div className="logo">Numbit</div>
+            <aside className={`sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
+                <div className="sidebar-header">
+                    <div className="logo">Numbit</div>
+                    <button
+                        className="sidebar-close-btn"
+                        onClick={() => setIsSidebarOpen(false)}
+                        title="Close Sidebar"
+                    >
+                        <X size={20} />
+                    </button>
+                </div>
                 <Toolbar
                     activeTool={activeTool}
                     setActiveTool={setActiveTool}
@@ -247,6 +266,15 @@ function App() {
                 />
             </aside>
             <main className="main-content">
+                {(!isSidebarOpen || window.innerWidth <= 768) && (
+                    <button
+                        className="sidebar-open-btn"
+                        onClick={() => setIsSidebarOpen(true)}
+                        title="Open Sidebar"
+                    >
+                        <Menu size={24} />
+                    </button>
+                )}
                 <Grid
                     width={size}
                     height={size}
@@ -255,6 +283,7 @@ function App() {
                     backgroundColor={backgroundColor}
                     onPixelClick={handlePixelClick}
                     onPixelEnter={handlePixelEnter}
+                    onPixelDoubleClick={handlePixelDoubleClick}
                     isDrawing={isDrawing}
                     showGridLines={showGridLines}
                 />
