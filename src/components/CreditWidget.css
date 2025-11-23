@@ -81,4 +81,13 @@
     .credit-text {
         font-size: 0.6rem;
     }
+
+    /* Collapse to just icon when sidebar is open on mobile */
+    .credit-widget.collapsed {
+        padding: 0.5rem;
+    }
+
+    .credit-widget.collapsed .credit-content {
+        display: none;
+    }
 }

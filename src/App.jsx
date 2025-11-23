@@ -411,7 +411,7 @@ function App() {
                 >
                     Are you sure you want to remove all custom colors? This action cannot be undone.
                 </Modal>
-                <CreditWidget />
+                <CreditWidget isSidebarOpen={isSidebarOpen} />
             </main>
         </div >
     );
